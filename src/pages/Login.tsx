@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import axiosInstance from '../api/axiosInstance';
 import axios from 'axios';
 
 const Login: React.FC = () => {
@@ -12,17 +13,12 @@ const Login: React.FC = () => {
             pw: pw,
         };
         try {
-            const response = await axios.post(apiUrl+'/api/auth/login', data);
+            const response = await axiosInstance.post(apiUrl+'/api/auth/login', data);
             const responseData = response.data;
             console.log(responseData);
         } catch (error) {
             if (axios.isAxiosError(error)) {
-                console.log(error.response?.status);
-                if (error.response?.status === 401) {
-                    console.error('아이디 또는 비밀번호가 올바르지 않습니다.');
-                } else {
-                    console.error('로그인 실패:', error.message);
-                }
+                console.error('아이디 또는 비밀번호가 올바르지 않습니다.');
             } else {
                 console.error('알 수 없는 오류:', error);
             }
