@@ -4,12 +4,15 @@ import axiosInstance from '../api/axiosInstance';
 import axios from 'axios';
 import { toast } from 'sonner';
 import { errorHandler } from '../utils/errorHandler.ts';
+import { useUserStore } from '../stores/userStore';
+import WebSocketClient from '../components/WebSocketClient';
 
 const Login: React.FC = () => {
     const navigate = useNavigate();
     const apiUrl = import.meta.env.VITE_API_URL;
     const [userId, setUserId] = useState('');
     const [pw, setPw] = useState('');
+    const [loggedIn, setLoggedIn] = useState(false);
 
     const login = async () => {
         const data = {
@@ -20,6 +23,10 @@ const Login: React.FC = () => {
             const response = await axiosInstance.post(apiUrl+'/api/auth/login', data);
             if(response.data.status === 200){
                 toast.success(response.data.message);
+                const usernameData = await axiosInstance.get(apiUrl+'/api/user/nickname');
+                const username = usernameData.data.data;
+                useUserStore.getState().setUsername(username);
+                setLoggedIn(true);
                 navigate('/dashboard');
             }
         } catch (error) {
@@ -32,20 +39,29 @@ const Login: React.FC = () => {
     };
 
     return (
-        <div className="flex flex-col items-center justify-center space-y-4 h-screen">
-            <input type="text" id="userId" placeholder="아이디를 입력하세요"
-                   value={userId}
-                   onChange={(e) => setUserId(e.target.value)}
-                   className="w-1/4 px-4 py-2 border border-gray-300 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500" />
-            <input type="password" id="pw" placeholder="비밀번호를 입력하세요"
-                   value={pw}
-                   onChange={(e) => setPw(e.target.value)}
-                   className="w-1/4 px-4 py-2 border border-gray-300 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500" />
-            <button
-                onClick={login}
-                className="w-1/4 py-2 bg-blue-500 text-white font-semibold rounded-xl hover:bg-blue-600">로그인
-            </button>
-        </div>
+        <>
+            <div className="flex flex-col items-center justify-center space-y-4 h-screen">
+                <input
+                    value={userId}
+                    onChange={(e) => setUserId(e.target.value)}
+                    placeholder="아이디"
+                    className="border p-2 rounded w-64"
+                />
+                <input
+                    type="password"
+                    value={pw}
+                    onChange={(e) => setPw(e.target.value)}
+                    placeholder="비밀번호"
+                    className="border p-2 rounded w-64"
+                />
+                <button
+                    onClick={login}
+                    className="bg-blue-500 text-white px-4 py-2 rounded w-64"
+                >
+                    로그인
+                </button>
+            </div>
+        </>
     );
 }
 export default Login;
