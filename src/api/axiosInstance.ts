@@ -19,6 +19,10 @@ axiosInstance.interceptors.response.use(
                 console.error('토큰 재발급 실패', refreshError);
             }
         }
+        if (error.response?.status === 403) {
+            window.location.href = '/';
+            return;
+        }
         return Promise.reject(error);
     }
 );

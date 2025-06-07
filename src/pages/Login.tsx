@@ -4,15 +4,12 @@ import axiosInstance from '../api/axiosInstance';
 import axios from 'axios';
 import { toast } from 'sonner';
 import { errorHandler } from '../utils/errorHandler.ts';
-import { useUserStore } from '../stores/userStore';
-import WebSocketClient from '../components/WebSocketClient';
 
 const Login: React.FC = () => {
     const navigate = useNavigate();
     const apiUrl = import.meta.env.VITE_API_URL;
     const [userId, setUserId] = useState('');
     const [pw, setPw] = useState('');
-    const [loggedIn, setLoggedIn] = useState(false);
 
     const login = async () => {
         const data = {
@@ -23,10 +20,6 @@ const Login: React.FC = () => {
             const response = await axiosInstance.post(apiUrl+'/api/auth/login', data);
             if(response.data.status === 200){
                 toast.success(response.data.message);
-                const usernameData = await axiosInstance.get(apiUrl+'/api/user/nickname');
-                const username = usernameData.data.data;
-                useUserStore.getState().setUsername(username);
-                setLoggedIn(true);
                 navigate('/dashboard');
             }
         } catch (error) {
@@ -54,10 +47,7 @@ const Login: React.FC = () => {
                     placeholder="비밀번호"
                     className="border p-2 rounded w-64"
                 />
-                <button
-                    onClick={login}
-                    className="bg-blue-500 text-white px-4 py-2 rounded w-64"
-                >
+                <button onClick={login} className="bg-blue-500 text-white px-4 py-2 rounded w-64">
                     로그인
                 </button>
             </div>
