@@ -1,12 +1,12 @@
 
 
-const Content = () => {
+const AdminSetting = () => {
 
     return (
         <div className="flex flex-col items-center justify-center h-full">
-            Main
+            AdminSetting
         </div>
     );
 
 }
-export default Content;
+export default AdminSetting;

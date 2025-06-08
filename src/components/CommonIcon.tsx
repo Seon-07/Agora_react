@@ -6,6 +6,10 @@ import {
   faUser,
   faCog,
   faRightFromBracket,
+  faSquarePlus,
+  faCheckToSlot,
+  faScrewdriverWrench,
+  faBell,
 } from '@fortawesome/free-solid-svg-icons';
 
 
@@ -19,6 +23,10 @@ const iconMap: Record<string, IconDefinition> = {
   faUser: faUser,
   faCog: faCog,
   faRightFromBracket: faRightFromBracket,
+  faSquarePlus: faSquarePlus,
+  faCheckToSlot: faCheckToSlot,
+  faScrewdriverWrench: faScrewdriverWrench,
+  faBell: faBell,
 };
 
 const CommonIcon = ({ name, className }: Props) => {

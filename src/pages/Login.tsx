@@ -20,7 +20,7 @@ const Login: React.FC = () => {
             const response = await axiosInstance.post(apiUrl+'/api/auth/login', data);
             if(response.data.status === 200){
                 toast.success(response.data.message);
-                navigate('/dashboard');
+                navigate('/home');
             }
         } catch (error) {
             if (axios.isAxiosError(error)) {

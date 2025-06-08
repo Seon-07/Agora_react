@@ -3,7 +3,7 @@ import MenuBar from '../components/MenuBar';
 import { Outlet } from 'react-router-dom';
 import React from "react";
 
-const Dashboard: React.FC = () => {
+const Home: React.FC = () => {
     return (
         <>
             <div className="flex flex-col h-screen overflow-hidden relative">
@@ -21,4 +21,4 @@ const Dashboard: React.FC = () => {
 
     );
 }
-export default Dashboard;
+export default Home;

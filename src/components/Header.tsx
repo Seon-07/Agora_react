@@ -47,6 +47,7 @@ const Header = () => {
             <div className="flex items-center">
                 <span>{username}</span>
                 <span className="font-bold mx-1"> 님</span>
+                <CommonIcon name="faBell" className="ml-4 mr-1" />
                 <CommonIcon name="faRightFromBracket" className="ml-4 mr-1" />
                 <button onClick={handleLogout} className="bg-transparent border-none text-gray-700 hover:text-black">
                     로그아웃

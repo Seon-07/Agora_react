@@ -1,9 +1,13 @@
-import { BrowserRouter as Router, Routes, Route} from 'react-router-dom';
-import { Toaster } from 'sonner';
-import Login from './pages/Login.tsx';
-import Dashboard from "./pages/Dashboard.tsx";
-import Content from "./components/Content.tsx";
 import React from "react";
+import {BrowserRouter as Router, Route, Routes} from 'react-router-dom';
+import {Toaster} from 'sonner';
+import Login from './pages/Login.tsx';
+import Home from "./pages/Home.tsx";
+import CreateRoom from "./pages/CreateRoom.tsx";
+import Layout from "./pages/Layout.tsx";
+import Setting from "./pages/Setting.tsx";
+import JoinedRoom from "./pages/JoinedRoom.tsx";
+import AdminSetting from "./pages/AdminSetting.tsx";
 
 const App: React.FC = () => {
     return (
@@ -11,8 +15,12 @@ const App: React.FC = () => {
             <Router>
                 <Routes>
                     <Route path="/" element={<Login />} />
-                    <Route path="/dashboard" element={<Dashboard />}>
-                        <Route index element={<Content />} />
+                    <Route element={<Layout />}>
+                        <Route path="home" element={<Home />} />
+                        <Route path="createRoom" element={<CreateRoom />} />
+                        <Route path="setting" element={<Setting />} />
+                        <Route path="joinedRoom" element={<JoinedRoom />} />
+                        <Route path="adminSetting" element={<AdminSetting />} />
                     </Route>
                 </Routes>
             </Router>

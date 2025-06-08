@@ -1,2 +1,5 @@
 /*noinspection CssUnknownTarget*/
 @import "tailwindcss";
+button {
+    cursor: pointer;
+}
