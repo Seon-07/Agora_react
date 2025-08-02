@@ -21,11 +21,12 @@ const CreateRoom: React.FC = () => {
         };
 
         try {
-            const response = await axiosInstance.post(apiUrl + '/api/room/create', data);
-            if (response.data.status === 200) {
-                toast.success(response.data.message || '방 생성 성공');
-                navigate('/home');
-            }
+            const res = await axiosInstance.post(apiUrl + '/api/room/create', data);
+            const content = res.data.data;
+            console.log(res);
+            toast.success(res.data.message);
+            navigate('/room/' + content.id, { state: content });
+
         } catch (error) {
             if (axios.isAxiosError(error)) {
                 errorHandler(error);

@@ -3,6 +3,7 @@ import axiosInstance from '../api/axiosInstance';
 import RoomCard from '../components/RoomCard';
 
 interface Room {
+    id: string;
     name: string;
     topic: string;
     status: string;
@@ -64,6 +65,7 @@ const Home = () => {
                 {rooms.map((room, idx) => (
                     <RoomCard
                         key={idx}
+                        id={room.id}
                         name={room.name}
                         topic={room.topic}
                         status={room.status}

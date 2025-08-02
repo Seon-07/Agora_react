@@ -8,6 +8,7 @@ import Layout from "./pages/Layout.tsx";
 import Setting from "./pages/Setting.tsx";
 import JoinedRoom from "./pages/JoinedRoom.tsx";
 import AdminSetting from "./pages/AdminSetting.tsx";
+import Room from "./pages/Room.tsx";
 
 const App: React.FC = () => {
     return (
@@ -21,6 +22,7 @@ const App: React.FC = () => {
                         <Route path="setting" element={<Setting />} />
                         <Route path="joinedRoom" element={<JoinedRoom />} />
                         <Route path="adminSetting" element={<AdminSetting />} />
+                        <Route path="room/:roomId" element={<Room />} />
                     </Route>
                 </Routes>
             </Router>
