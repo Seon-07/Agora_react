@@ -6,6 +6,7 @@ import { toast } from "sonner";
 import axios from "axios";
 import { errorHandler } from "../utils/errorHandler.ts";
 import CommonIcon from '../components/CommonIcon';
+import { disconnectStompClient } from '../api/stompClient';
 
 const Header = () => {
     const apiUrl = import.meta.env.VITE_API_URL;
@@ -30,6 +31,7 @@ const Header = () => {
             const response = await axiosInstance.post(apiUrl + '/api/auth/logout');
             if (response.data.status === 200) {
                 toast.success(response.data.message);
+                await disconnectStompClient();
                 navigate('/');
             }
         } catch (error) {

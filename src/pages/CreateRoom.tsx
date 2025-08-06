@@ -23,7 +23,6 @@ const CreateRoom: React.FC = () => {
         try {
             const res = await axiosInstance.post(apiUrl + '/api/room/create', data);
             const content = res.data.data;
-            console.log(res);
             toast.success(res.data.message);
             navigate('/room/' + content.id, { state: content });
 

@@ -4,6 +4,7 @@ import axiosInstance from '../api/axiosInstance';
 import axios from 'axios';
 import { toast } from 'sonner';
 import { errorHandler } from '../utils/errorHandler.ts';
+import { activateStompClient } from '../api/stompClient';
 
 const Login: React.FC = () => {
     const navigate = useNavigate();
@@ -20,6 +21,9 @@ const Login: React.FC = () => {
             const response = await axiosInstance.post(apiUrl+'/api/auth/login', data);
             if(response.data.status === 200){
                 toast.success(response.data.message);
+
+                activateStompClient();
+
                 navigate('/home');
             }
         } catch (error) {

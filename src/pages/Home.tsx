@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import axiosInstance from '../api/axiosInstance';
 import RoomCard from '../components/RoomCard';
+import { getStompClient } from '../api/stompClient';
 
 interface Room {
     id: string;
@@ -28,6 +29,18 @@ const Home = () => {
             }
         })();
     }, [selectedStatus]);
+
+    useEffect(() => {
+        const stompClient = getStompClient();
+
+        // 이미 연결되어 있으면 바로 구독
+        if (stompClient.connected) {
+            const subscription = stompClient.subscribe('/topic/rooms', (message) => {
+                console.log('받은 메시지:', message.body);
+            });
+            return () => subscription.unsubscribe();
+        }
+    }, []);
 
     return (
         <div className="p-4">
