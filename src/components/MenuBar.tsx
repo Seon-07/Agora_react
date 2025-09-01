@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import axiosInstance from '../api/axiosInstance';
-import CommonIcon from '../components/CommonIcon';
+import CommonIcon from './common/CommonIcon.tsx';
 import { useNavigate, useLocation } from 'react-router-dom';
 
 interface Menu {

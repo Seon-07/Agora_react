@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import axiosInstance from '../api/axiosInstance';
-import RoomCard from '../components/RoomCard';
+import RoomCard from '../components/room/RoomCard.tsx';
 import { getStompClient } from '../api/stompClient';
 
 interface Room {

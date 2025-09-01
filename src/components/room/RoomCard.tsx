@@ -1,7 +1,7 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import {toast} from "sonner";
-import axiosInstance from '../api/axiosInstance';
+import axiosInstance from '../../api/axiosInstance.ts';
 
 interface RoomCardProps {
     id: string;

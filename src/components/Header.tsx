@@ -1,11 +1,11 @@
-import logo from '../assets/images/FAIR_IN.png';
+import logo from '../assets/images/Moca_logo.png';
 import axiosInstance from "../api/axiosInstance.ts";
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from "sonner";
 import axios from "axios";
 import { errorHandler } from "../utils/errorHandler.ts";
-import CommonIcon from '../components/CommonIcon';
+import CommonIcon from './common/CommonIcon.tsx';
 import { disconnectStompClient } from '../api/stompClient';
 
 const Header = () => {
