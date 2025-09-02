@@ -1,14 +1,22 @@
 import { useNavigate } from 'react-router-dom';
+import Button from "../common/Button.tsx";
+import React from "react";
 
-const RoomMenuBar = () => {
+const RoomMenuBar: React.FC = () => {
     const navigate = useNavigate();
 
+    const exit = () => {
+        navigate("/home");
+    }
     return (
-        <div className="flex justify-around items-center bg-gray-100 h-20 md:h-16 px-4 md:px-2">
-            <button onClick={() => navigate('/home')}
-                className="flex flex-col items-center hover:text-black"
-            >나가기
-            </button>
+        <div className="flex justify-center items-center bg-gray-100 h-20 md:h-16 px-4 md:px-2">
+            <div className="h-1/10 w-full flex items-center justify-center">
+                <Button
+                    onClick={exit}
+                    variant="default"
+                    label="나가기"
+                />
+            </div>
         </div>
     );
 };

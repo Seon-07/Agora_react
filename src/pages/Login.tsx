@@ -5,6 +5,7 @@ import axios from 'axios';
 import { toast } from 'sonner';
 import { errorHandler } from '../utils/errorHandler.ts';
 import { activateStompClient } from '../api/stompClient';
+import logo from "../assets/images/Moca_logo.png";
 
 const Login: React.FC = () => {
     const navigate = useNavigate();
@@ -36,26 +37,25 @@ const Login: React.FC = () => {
     };
 
     return (
-        <>
-            <div className="flex flex-col items-center justify-center space-y-4 h-screen">
-                <input
-                    value={userId}
-                    onChange={(e) => setUserId(e.target.value)}
-                    placeholder="아이디"
-                    className="border p-2 rounded w-64"
-                />
-                <input
-                    type="password"
-                    value={pw}
-                    onChange={(e) => setPw(e.target.value)}
-                    placeholder="비밀번호"
-                    className="border p-2 rounded w-64"
-                />
-                <button onClick={login} className="bg-blue-500 text-white px-4 py-2 rounded w-64">
-                    로그인
-                </button>
-            </div>
-        </>
+        <div className="flex flex-col justify-center items-center h-screen w-screen pb-24">
+            <img src={logo} alt="logo" className="h-52 object-contain" />
+            <input
+                value={userId}
+                onChange={(e) => setUserId(e.target.value)}
+                placeholder="아이디"
+                className="border p-2 rounded w-64 mb-4"
+            />
+            <input
+                type="password"
+                value={pw}
+                onChange={(e) => setPw(e.target.value)}
+                placeholder="비밀번호"
+                className="border p-2 rounded w-64 mb-4"
+            />
+            <button onClick={login} className="bg-blue-500 text-white px-4 py-2 rounded w-64">
+                로그인
+            </button>
+        </div>
     );
 }
 export default Login;
