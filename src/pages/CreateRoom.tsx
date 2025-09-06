@@ -11,12 +11,14 @@ const CreateRoom: React.FC = () => {
 
     const [name, setName] = useState('');
     const [topic, setTopic] = useState('');
+    const [side, setSide] = useState<string | null>(null);
     const [isPrivate, setIsPrivate] = useState(false);
 
     const createRoom = async () => {
         const data = {
             name,
             topic,
+            side: side || null ,
             isPrivate,
         };
 
@@ -25,7 +27,6 @@ const CreateRoom: React.FC = () => {
             const content = res.data.data;
             toast.success(res.data.message);
             navigate('/room/' + content.id, { state: content });
-
         } catch (error) {
             if (axios.isAxiosError(error)) {
                 errorHandler(error);
@@ -49,6 +50,42 @@ const CreateRoom: React.FC = () => {
                 placeholder="주제"
                 className="border p-2 rounded w-64"
             />
+            <div className="flex justify-between w-64">
+                <label className="flex cursor-pointer">
+                    <input
+                        type="radio"
+                        name="side"
+                        value="PRO"
+                        checked={side === 'PRO'}
+                        onChange={(e) => setSide(e.target.value)}
+                        className="hidden"
+                    />
+                    <span
+                        className={
+                            "px-4 py-2 rounded-lg border " +
+                            (side === "PRO" ? "bg-green-200 border-green-500 text-green-700" : "bg-white border-gray-300 text-gray-600")
+                        }
+                    >찬성
+                    </span>
+                </label>
+                <label className="flex cursor-pointer">
+                    <input
+                        type="radio"
+                        name="side"
+                        value="CON"
+                        checked={side === 'CON'}
+                        onChange={(e) => setSide(e.target.value)}
+                        className="hidden"
+                    />
+                    <span
+                        className={
+                            "px-4 py-2 rounded-lg border " +
+                            (side === "CON" ? "bg-red-200 border-red-500 text-red-700" : "bg-white border-gray-300 text-gray-600")
+                        }
+                    >반대
+                    </span>
+                </label>
+            </div>
             <label className="flex items-center space-x-2">
                 <input
                     type="checkbox"

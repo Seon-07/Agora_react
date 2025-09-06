@@ -44,7 +44,7 @@ const Header = () => {
     };
 
     return (
-        <header className="flex justify-between items-center px-4">
+        <header className="flex justify-between items-center px-4 h-full">
             <img src={logo} alt="logo" className="h-16" />
             <div className="flex items-center">
                 <span>{username}</span>

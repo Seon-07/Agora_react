@@ -22,7 +22,7 @@ const App: React.FC = () => {
                         <Route path="setting" element={<Setting />} />
                         <Route path="joinedRoom" element={<JoinedRoom />} />
                         <Route path="adminSetting" element={<AdminSetting />} />
-                        <Route path="room/:roomId" element={<Room />} />
+                        <Route path="room/:id" element={<Room />} />
                     </Route>
                 </Routes>
             </Router>

@@ -9,22 +9,30 @@ const Home: React.FC = () => {
     const location = useLocation();
     const isRoom = location.pathname.startsWith('/room/');
     return (
-        <div className="flex flex-col h-screen">
-            <div className="h-1/10 bg-gray-100">
+        <div className="flex flex-col h-screen overflow-hidden">
+            <div className="md:h-1/10 h-1/12 bg-blue-50">
                 <Header />
             </div>
-            <div className="flex-1 flex flex-col md:flex-col">
-                {!isRoom && (
-                    <div className="hidden md:block h-1/10 bg-gray-200">
-                        <MenuBar />
-                    </div>
+            <div className="flex flex-col md:h-9/10 h-11/12 overscroll-contain">
+                {!isRoom ? (
+                    <>
+                        <div className="hidden md:block h-1/12 bg-gray-200">
+                            <MenuBar />
+                        </div>
+                        <div className="h-full overflow-auto bg-white">
+                            <Outlet />
+                        </div>
+                    </>
+                ) : (
+                    <>
+                        <div className="md:h-full h-11/12 overflow-auto bg-white">
+                            <Outlet />
+                        </div>
+                        <div className="block md:hidden h-1/12 bg-gray-200">
+                            <RoomMenuBar />
+                        </div>
+                    </>
                 )}
-                <div className="flex-1 overflow-auto bg-white">
-                    <Outlet />
-                </div>
-                <div className="block md:hidden h-1/10 bg-gray-200">
-                    {isRoom ? <RoomMenuBar /> : <MenuBar />}
-                </div>
             </div>
         </div>
     );

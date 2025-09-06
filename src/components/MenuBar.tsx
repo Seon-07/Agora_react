@@ -27,10 +27,9 @@ const MenuBar = () => {
     }, []);
 
     return (
-        <div className="flex justify-around items-center bg-gray-100 h-20 md:h-16 px-4 md:px-2">
+        <div className="flex justify-around items-center bg-gray-100 h-full px-4 md:px-2">
             {menus.map((menu) => {
                 const isActive = location.pathname === menu.uri;
-
                 return (
                     <button
                         key={menu.uri}

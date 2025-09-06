@@ -1,7 +1,5 @@
 import React from 'react';
-import { useNavigate } from 'react-router-dom';
-import {toast} from "sonner";
-import axiosInstance from '../../api/axiosInstance.ts';
+import {useNavigate} from 'react-router-dom';
 
 interface RoomCardProps {
     id: string;
@@ -12,18 +10,8 @@ interface RoomCardProps {
 
 const RoomCard: React.FC<RoomCardProps> = ({id, name, topic, status }) => {
     const navigate = useNavigate();
-    const apiUrl = import.meta.env.VITE_API_URL;
-    const handleClick = async () => {
-        try {
-            const res = await axiosInstance.get(apiUrl + '/api/room?id=' + id);
-            console.log(res);
-            toast.success(res.data.message);
-            navigate('/room/' + id , {
-                state: res.data.data
-            });
-        } catch (err) {
-            console.error('방 입장 실패:', err);
-        }
+    const handleClick = () => {
+        navigate('/room/' + id);
     };
 
     return (
