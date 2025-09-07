@@ -7,21 +7,10 @@ const axiosInstance = axios.create({
 
 axiosInstance.interceptors.response.use(
     response => response,
-    async (error) => {
-        const originalRequest = error.config;
-
-        if (error.response?.status === 401 && !originalRequest._retry) {
-            originalRequest._retry = true;
-            try {
-                await axiosInstance.post('/api/auth/reissue');
-                return axiosInstance(originalRequest);
-            } catch (refreshError) {
-                console.error('토큰 재발급 실패', refreshError);
-            }
-        }
-        if (error.response?.status === 403) {
-            window.location.href = '/';
-            return;
+    error => {
+        if (error.response?.status === 401) {
+            // 세션 만료 → 로그인 페이지로 이동
+            window.location.href = '/login';
         }
         return Promise.reject(error);
     }

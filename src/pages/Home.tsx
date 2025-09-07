@@ -35,10 +35,14 @@ const Home = () => {
 
         // 이미 연결되어 있으면 바로 구독
         if (stompClient.connected) {
-            const subscription = stompClient.subscribe('/topic/rooms', (message) => {
-                console.log('받은 메시지:', message.body);
-            });
-            return () => subscription.unsubscribe();
+            if (stompClient.connected) {
+                const subscription = stompClient.subscribe('/topic/rooms', (message) => {
+                    const newRoom: Room = JSON.parse(message.body);
+                    console.log(newRoom);
+                    setRooms((prev) => [...prev, newRoom]);
+                });
+                return () => subscription.unsubscribe();
+            }
         }
     }, []);
 

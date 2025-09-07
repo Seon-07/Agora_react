@@ -31,7 +31,7 @@ const Header = () => {
             const response = await axiosInstance.post(apiUrl + '/api/auth/logout');
             if (response.data.status === 200) {
                 toast.success(response.data.message);
-                await disconnectStompClient();
+                disconnectStompClient();
                 navigate('/');
             }
         } catch (error) {
