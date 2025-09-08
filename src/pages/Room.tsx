@@ -5,7 +5,7 @@ import RoomSidebar from "../components/room/RoomSidebar.tsx";
 import RoomInfo from "../components/room/RoomInfo.tsx";
 import RoomMain from "../components/room/RoomMain.tsx";
 import {toast} from "sonner";
-
+import {getStompClient} from "../api/stompClient.ts";
 interface RoomResponse {
     id: string;
     name: string;
@@ -36,6 +36,19 @@ const Room : React.FC = () => {
                 console.error('방 입장 실패:', err);
             }
         })();
+    }, [apiUrl, id]);
+
+    useEffect(() => {
+        if (!id) return;
+        const client = getStompClient();
+        if (client.connected) {
+            const chatSub = client.subscribe("/topic/room/"+id+"/chat", (massage) => {
+                console.log("chat:", JSON.parse(massage.body));
+            });
+            return () => {
+                chatSub.unsubscribe();
+            };
+        }
     }, [id]);
 
     if (!room) return <div>로딩중...</div>;

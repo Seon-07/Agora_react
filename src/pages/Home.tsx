@@ -38,7 +38,6 @@ const Home = () => {
             if (stompClient.connected) {
                 const subscription = stompClient.subscribe('/topic/rooms', (message) => {
                     const newRoom: Room = JSON.parse(message.body);
-                    console.log(newRoom);
                     setRooms((prev) => [...prev, newRoom]);
                 });
                 return () => subscription.unsubscribe();
