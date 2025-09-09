@@ -6,6 +6,7 @@ import RoomInfo from "../components/room/RoomInfo.tsx";
 import RoomMain from "../components/room/RoomMain.tsx";
 import {toast} from "sonner";
 import {getStompClient} from "../api/stompClient.ts";
+
 interface RoomResponse {
     id: string;
     name: string;
@@ -51,7 +52,7 @@ const Room : React.FC = () => {
         }
     }, [id]);
 
-    if (!room) return <div>로딩중...</div>;
+    if (!room) return <div className="w-screen h-full flex text-center items-center">로딩중...</div>;
 
     return (
         <div className="flex h-full w-screen">
@@ -63,7 +64,7 @@ const Room : React.FC = () => {
                     <RoomInfo name={room.name} topic={room.topic} />
                 </div>
                 <div className="h-11/12 md:h-full">
-                    <RoomMain />
+                    <RoomMain roomId={room.id} />
                 </div>
             </div>
         </div>
