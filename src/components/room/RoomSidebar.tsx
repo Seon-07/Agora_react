@@ -40,7 +40,7 @@ const RoomSidebar: React.FC<SidebarProps> = ({ room }) => {
                     const user = JSON.parse(message.body) as { nickname: string };
                     setParticipants((prev) => {
                         if (prev.includes(user.nickname)) {
-                            return prev; // 중복 방지
+                            return prev;
                         }
                         return [...prev, user.nickname];
                     });
@@ -60,11 +60,23 @@ const RoomSidebar: React.FC<SidebarProps> = ({ room }) => {
             <div className="w-full flex h-1/6">
                 <div className="flex flex-col text-center w-1/2 bg-green-50 rounded-xl p-3">
                     <div className="font-bold text-green-600 mb-2">찬성</div>
-                    <ul>{room.proNickname != null ? (<li>{room.proNickname}</li>) : (<li className="text-gray-400">비어있음</li>)}</ul>
+                    <ul>{room.proNickname != null ? (<li>{room.proNickname}</li>) : (<li className="text-gray-400">
+                        <Button
+                            onClick={exit}
+                            variant="success"
+                            label="찬성 토론"
+                        />
+                    </li>)}</ul>
                 </div>
                 <div className="flex flex-col text-center w-1/2 bg-red-50 rounded-xl p-3">
                     <div className="font-bold text-red-600 mb-2">반대</div>
-                    <ul>{room.conNickname != null ? (<li>{room.conNickname}</li>) : (<li className="text-gray-400">비어있음</li>)}</ul>
+                    <ul>{room.conNickname != null ? (<li>{room.conNickname}</li>) : (<li className="text-gray-400">
+                        <Button
+                            onClick={exit}
+                            variant="danger"
+                            label="반대 토론"
+                        />
+                    </li>)}</ul>
                 </div>
             </div>
             <hr />

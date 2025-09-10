@@ -42,14 +42,19 @@ const Room : React.FC = () => {
     useEffect(() => {
         if (!id) return;
         const client = getStompClient();
-        if (client.connected) {
-            const chatSub = client.subscribe("/topic/room/"+id+"/chat", (massage) => {
-                console.log("chat:", JSON.parse(massage.body));
-            });
-            return () => {
-                chatSub.unsubscribe();
-            };
-        }
+        if (!client.connected) return;
+
+        const chatSub = client.subscribe("/topic/room/" + id + "/chat", (message) => {
+            console.log("chat:", JSON.parse(message.body));
+        });
+        const stateSub = client.subscribe("/topic/room/" + id + "/state", (message) => {
+            console.log("state:", JSON.parse(message.body));
+        });
+
+        return () => {
+            chatSub.unsubscribe();
+            stateSub.unsubscribe();
+        };
     }, [id]);
 
     if (!room) return <div className="w-screen h-full flex text-center items-center">로딩중...</div>;
@@ -64,7 +69,7 @@ const Room : React.FC = () => {
                     <RoomInfo name={room.name} topic={room.topic} />
                 </div>
                 <div className="h-11/12 md:h-full">
-                    <RoomMain roomId={room.id} />
+                    <RoomMain roomId={room.id} pro={room.proNickname} con={room.conNickname}/>
                 </div>
             </div>
         </div>

@@ -3,6 +3,8 @@ import Input from "../common/Input.tsx";
 import Button from "../common/Button.tsx";
 import {getStompClient} from "../../api/stompClient.ts";
 import axiosInstance from "../../api/axiosInstance.ts";
+import {useAuthStore} from "../../stores/authStore.ts";
+import ChatBox from "./chat/ChatBox.tsx";
 
 interface ChatMessage {
     id: string;
@@ -14,11 +16,14 @@ interface ChatMessage {
 
 interface Props {
     roomId: string;
+    pro : string | null;
+    con : string | null;
 }
 
-const RoomMain: React.FC<Props> = ({roomId}) => {
+const RoomMain: React.FC<Props> = ({roomId, pro, con}) => {
     const [inputMessage, setInputMessage] = useState('');
     const [messages, setMessages] = useState<ChatMessage[]>([]);
+    const { nickname } = useAuthStore();
     const apiUrl = import.meta.env.VITE_API_URL;
 
     useEffect(() => {
@@ -50,13 +55,46 @@ const RoomMain: React.FC<Props> = ({roomId}) => {
 
     return (
         <div className="flex flex-col space-y-4 h-full p-2 border-sky-200 border-x">
+            <div className="flex justify-between px-4 py-2 border-b text-sm font-bold">
+            {nickname === pro ? (
+                <>
+                    <div><span className="text-red-600">반대측:</span> <span>{con}</span></div>
+                    <div><span className="text-blue-600">찬성측:</span> <span>{pro}</span></div>
+                </>
+            ) : (
+                <>
+                    <div><span className="text-blue-600">찬성측:</span> <span>{pro}</span></div>
+                    <div><span className="text-red-600">반대측:</span> <span>{con}</span></div>
+                </>
+            )}
+            </div>
             <div className="h-9/10 overflow-y-auto space-y-2">
-                {messages.map((chat, idx) => (
-                    <div key={idx} className="p-2 rounded bg-gray-100">
-                        <span className="font-bold">{chat.senderNickname}: </span>
-                        {chat.message}
-                    </div>
-                ))}
+                {messages.map((chat, idx) => {
+                    let align: "left" | "right" = "left";
+                    let color: "blue" | "gray" | "green" = "gray";
+
+                    if (nickname != pro && nickname != con) {
+                        color = "green";
+                        align = chat.senderType === "PRO" ? "left" : "right";
+                    } else {
+                        if (chat.senderNickname === nickname) {
+                            align = "right";
+                            color = "blue";
+                        } else {
+                            align = "left";
+                            color = "gray";
+                        }
+                    }
+
+                    return (
+                        <ChatBox
+                            key={idx}
+                            message={chat.message}
+                            align={align}
+                            color={color}
+                        />
+                    );
+                })}
             </div>
             <div className="h-1/10 flex items-center px-3 gap-2 p-2">
                 <div className="w-10/12 md:w-11/12">
