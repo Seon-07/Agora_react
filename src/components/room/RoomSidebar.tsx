@@ -3,6 +3,11 @@ import { useNavigate } from "react-router-dom";
 import RoomInfo from "./RoomInfo.tsx";
 import Button from "../common/Button.tsx";
 import {getStompClient} from "../../api/stompClient.ts";
+import axiosInstance from "../../api/axiosInstance.ts";
+import {toast} from "sonner";
+import axios from "axios";
+import {errorHandler} from "../../utils/errorHandler.ts";
+import {useAuthStore} from "../../stores/authStore.ts";
 
 interface SidebarProps {
     room : {
@@ -22,11 +27,33 @@ interface SidebarProps {
 
 const RoomSidebar: React.FC<SidebarProps> = ({ room }) => {
     const navigate = useNavigate();
-
     const [participants, setParticipants] = useState<string[]>([]); // 접속자 목록
-
-    const exit = () => {
-        navigate("/home");
+    const { id, nickname } = useAuthStore();
+    const exit = async () => {
+        const isPlayer = nickname == room.proNickname || nickname == room.conNickname;
+        let userSide = null;
+        if(isPlayer){
+            userSide = nickname == room.proNickname ? "PRO" : "CON";
+        }
+        const data = {
+            roomId : room.id,
+            userId : id,
+            side : userSide,
+            type : 'delete',
+        };
+        try {
+            const response = await axiosInstance.post('/api/room/exit', data);
+            if (response.data.status === 200) {
+                toast.success(response.data.message);
+                navigate("/home");
+            }
+        } catch (error) {
+            if (axios.isAxiosError(error)) {
+                errorHandler(error);
+            } else {
+                toast.error('알 수 없는 오류가 발생했습니다.');
+            }
+        }
     };
 
     useEffect(() => {

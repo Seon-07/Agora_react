@@ -23,6 +23,7 @@ const Login: React.FC = () => {
             if(response.data.status === 200){
                 toast.success(response.data.message);
 
+                //웹소켓 활성화
                 activateStompClient();
 
                 navigate('/home');

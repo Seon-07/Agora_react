@@ -10,32 +10,31 @@ import { disconnectStompClient } from '../api/stompClient';
 import {useAuthStore} from "../stores/authStore.ts";
 
 const Header = () => {
-    const apiUrl = import.meta.env.VITE_API_URL;
     const navigate = useNavigate();
 
-    const { nickname, setNickname } = useAuthStore();
+    const { nickname, setNickname, setId} = useAuthStore();
 
     useEffect(() => {
-        (async function fetchUsername() {
+        (async ()=> {
             try {
-                const response = await axiosInstance.get(apiUrl + '/api/user/nickname');
-                const username = response.data.data;
-                setNickname(username);
+                const response = await axiosInstance.get('/api/user/info');
+                console.log(response);
+                const data = response.data.data;
+                setNickname(data.nickname);
+                setId(data.id);
             } catch (error) {
-                console.error('닉네임 요청 실패:', error);
+                console.error('사용자 정보 요청 실패:', error);
             }
         })();
-    }, [apiUrl, setNickname]);
+    }, [setNickname, setId]);
 
     const handleLogout = async () => {
         try {
-            const response = await axiosInstance.post(apiUrl + '/api/auth/logout');
-            if (response.data.status === 200) {
-                toast.success(response.data.message);
-                disconnectStompClient();
-                setNickname("");
-                navigate('/');
-            }
+            const response = await axiosInstance.post('/api/auth/logout');
+            toast.success(response.data.message);
+            disconnectStompClient();
+            setNickname("");
+            navigate('/');
         } catch (error) {
             if (axios.isAxiosError(error)) {
                 errorHandler(error);

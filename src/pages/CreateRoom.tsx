@@ -7,8 +7,6 @@ import { errorHandler } from '../utils/errorHandler';
 
 const CreateRoom: React.FC = () => {
     const navigate = useNavigate();
-    const apiUrl = import.meta.env.VITE_API_URL;
-
     const [name, setName] = useState('');
     const [topic, setTopic] = useState('');
     const [side, setSide] = useState<string | null>(null);
@@ -21,11 +19,10 @@ const CreateRoom: React.FC = () => {
             side: side || null ,
             isPrivate,
         };
-
         try {
-            const res = await axiosInstance.post(apiUrl + '/api/room/create', data);
-            const content = res.data.data;
-            toast.success(res.data.message);
+            const response = await axiosInstance.post('/api/room/create', data);
+            const content = response.data.data;
+            toast.success(response.data.message);
             navigate('/room/' + content.id, { state: content });
         } catch (error) {
             if (axios.isAxiosError(error)) {

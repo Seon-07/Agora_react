@@ -8,6 +8,7 @@ interface Room {
     name: string;
     topic: string;
     status: string;
+    type: string;
 }
 
 type RoomStatus = 'WAITING' | 'ONGOING' | 'CLOSED';
@@ -20,29 +21,30 @@ const Home = () => {
     useEffect(() => {
         (async () => {
             try {
-                const res = await axiosInstance.get(
-                    apiUrl + '/api/room/list?status=' + selectedStatus
-                );
-                setRooms(res.data.data);
+                const response = await axiosInstance.get(apiUrl + '/api/room/list?status=' + selectedStatus);
+                setRooms(response.data.data);
             } catch (err) {
                 console.error('방 목록 요청 실패:', err);
             }
         })();
-    }, [selectedStatus]);
+    }, [selectedStatus, apiUrl]);
 
     useEffect(() => {
         const stompClient = getStompClient();
+        if(!stompClient.connected){return;}
+        const subscription = stompClient.subscribe('/topic/rooms', (message) => {
+            const data: Room = JSON.parse(message.body);
 
-        // 이미 연결되어 있으면 바로 구독
-        if (stompClient.connected) {
-            if (stompClient.connected) {
-                const subscription = stompClient.subscribe('/topic/rooms', (message) => {
-                    const newRoom: Room = JSON.parse(message.body);
-                    setRooms((prev) => [...prev, newRoom]);
+            if (data.type === 'add') { //방생성
+                setRooms(prev => {
+                    if (prev.find(room => room.id === data.id)) return prev;
+                    return [...prev, data];
                 });
-                return () => subscription.unsubscribe();
+            } else if (data.type === 'delete') { //방삭제
+                setRooms(prev => prev.filter(room => room.id !== data.id));
             }
-        }
+        });
+        return () => subscription.unsubscribe();
     }, []);
 
     return (

@@ -24,7 +24,6 @@ const RoomMain: React.FC<Props> = ({roomId, pro, con}) => {
     const [inputMessage, setInputMessage] = useState('');
     const [messages, setMessages] = useState<ChatMessage[]>([]);
     const { nickname } = useAuthStore();
-    const apiUrl = import.meta.env.VITE_API_URL;
 
     useEffect(() => {
         if (!roomId) return;
@@ -43,7 +42,7 @@ const RoomMain: React.FC<Props> = ({roomId, pro, con}) => {
     const sendMessage = async () => {
         if (!inputMessage.trim()) return;
         try {
-            await axiosInstance.post(apiUrl + "/api/chat", {
+            await axiosInstance.post("/api/chat", {
                 roomId: roomId,
                 message: inputMessage
             });
