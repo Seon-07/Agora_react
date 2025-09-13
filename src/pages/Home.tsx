@@ -34,7 +34,7 @@ const Home = () => {
         if(!stompClient.connected){return;}
         const subscription = stompClient.subscribe('/topic/rooms', (message) => {
             const data: Room = JSON.parse(message.body);
-
+            console.log(data);
             if (data.type === 'add') { //방생성
                 setRooms(prev => {
                     if (prev.find(room => room.id === data.id)) return prev;

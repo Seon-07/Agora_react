@@ -1,8 +1,8 @@
 import React, {useEffect, useState} from 'react';
 import {useParams} from 'react-router-dom';
 import axiosInstance from '../api/axiosInstance';
-import RoomSidebar from "../components/room/RoomSidebar.tsx";
-import RoomInfo from "../components/room/RoomInfo.tsx";
+import RoomSidebar from "../components/room/roomSidebar/RoomSidebar.tsx";
+import RoomInfo from "../components/room/roomSidebar/RoomInfo.tsx";
 import RoomMain from "../components/room/RoomMain.tsx";
 import {toast} from "sonner";
 import {getStompClient} from "../api/stompClient.ts";
@@ -25,34 +25,28 @@ const Room : React.FC = () => {
     const { id } = useParams<{ id: string }>();
     const [room, setRoom] = useState<RoomResponse | null>(null);
 
-    const apiUrl = import.meta.env.VITE_API_URL;
-
+    //방 접속 요청
     useEffect(() => {
         (async () => {
             try {
-                const res = await axiosInstance.get(apiUrl + '/api/room?id=' + id);
+                const res = await axiosInstance.get('/api/room?id=' + id);
                 setRoom(res.data.data);
                 toast.success(res.data.message);
             } catch (err) {
                 console.error('방 입장 실패:', err);
             }
         })();
-    }, [apiUrl, id]);
+    }, [id]);
 
+    //현재 방의 상태에 대해서 구독
     useEffect(() => {
         if (!id) return;
         const client = getStompClient();
         if (!client.connected) return;
-
-        const chatSub = client.subscribe("/topic/room/" + id + "/chat", (message) => {
-            console.log("chat:", JSON.parse(message.body));
-        });
         const stateSub = client.subscribe("/topic/room/" + id + "/state", (message) => {
             console.log("state:", JSON.parse(message.body));
         });
-
         return () => {
-            chatSub.unsubscribe();
             stateSub.unsubscribe();
         };
     }, [id]);

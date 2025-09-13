@@ -1,13 +1,14 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from "react-router-dom";
 import RoomInfo from "./RoomInfo.tsx";
-import Button from "../common/Button.tsx";
-import {getStompClient} from "../../api/stompClient.ts";
-import axiosInstance from "../../api/axiosInstance.ts";
+import Button from "../../common/Button.tsx";
+import {getStompClient} from "../../../api/stompClient.ts";
+import axiosInstance from "../../../api/axiosInstance.ts";
 import {toast} from "sonner";
 import axios from "axios";
-import {errorHandler} from "../../utils/errorHandler.ts";
-import {useAuthStore} from "../../stores/authStore.ts";
+import {errorHandler} from "../../../utils/errorHandler.ts";
+import {useAuthStore} from "../../../stores/authStore.ts";
+import RoomLog from "./RoomLog.tsx";
 
 interface SidebarProps {
     room : {
@@ -25,9 +26,14 @@ interface SidebarProps {
     }
 }
 
+export interface ParticipantEvent {
+    nickname: string;
+    action: string;
+}
 const RoomSidebar: React.FC<SidebarProps> = ({ room }) => {
     const navigate = useNavigate();
     const [participants, setParticipants] = useState<string[]>([]); // 접속자 목록
+    const [participantsLog, setParticipantsLog] = useState<ParticipantEvent[]>([]);
     const { id, nickname } = useAuthStore();
     const exit = async () => {
         const isPlayer = nickname == room.proNickname || nickname == room.conNickname;
@@ -55,21 +61,40 @@ const RoomSidebar: React.FC<SidebarProps> = ({ room }) => {
             }
         }
     };
-
+    //현재 채팅방에 접속중인 사용자 요청
     useEffect(() => {
-        if (!room.id) {
-            return;
-        }
+        if (!room.id) return;
+        (async () => {
+            try {
+                const res = await axiosInstance.get('/api/room/participants?roomId=' + room.id);
+                const all = res.data.data.paticipantsList as string[];
+                const participants = all.filter(
+                    (nick) => nick !== room.proNickname && nick !== room.conNickname
+                );
+                setParticipants(participants);
+            } catch (err) {
+                console.error("참가자 초기 로딩 실패:", err);
+            }
+        })();
+    }, [room.id, room.proNickname, room.conNickname]);
+
+    //현재 채팅방 접속자 구독
+    useEffect(() => {
+        if (!room.id) return;
         const client = getStompClient();
         if (client.connected) {
             const userSub = client.subscribe("/topic/room/" + room.id + "/users", (message) => {
                 try {
-                    const user = JSON.parse(message.body) as { nickname: string };
+                    const user = JSON.parse(message.body) as { nickname: string; type: string };
+
+                    setParticipantsLog((prev) => [...prev, { nickname: user.nickname, action: user.type }]);
                     setParticipants((prev) => {
-                        if (prev.includes(user.nickname)) {
-                            return prev;
+                        if (user.type === "add") {
+                            return prev.includes(user.nickname) ? prev : [...prev, user.nickname];
+                        } else if (user.type === "delete") {
+                            return prev.filter(nick => nick !== user.nickname);
                         }
-                        return [...prev, user.nickname];
+                        return prev;
                     });
                 } catch (error) {
                     console.error("참가자 메시지 파싱 오류:", error);
@@ -84,28 +109,6 @@ const RoomSidebar: React.FC<SidebarProps> = ({ room }) => {
     return (
         <div className="w-full h-full flex flex-col space-y-6 border border-sky-200 rounded-xl p-3">
             <RoomInfo name={room.name} topic={room.topic} />
-            <div className="w-full flex h-1/6">
-                <div className="flex flex-col text-center w-1/2 bg-green-50 rounded-xl p-3">
-                    <div className="font-bold text-green-600 mb-2">찬성</div>
-                    <ul>{room.proNickname != null ? (<li>{room.proNickname}</li>) : (<li className="text-gray-400">
-                        <Button
-                            onClick={exit}
-                            variant="success"
-                            label="찬성 토론"
-                        />
-                    </li>)}</ul>
-                </div>
-                <div className="flex flex-col text-center w-1/2 bg-red-50 rounded-xl p-3">
-                    <div className="font-bold text-red-600 mb-2">반대</div>
-                    <ul>{room.conNickname != null ? (<li>{room.conNickname}</li>) : (<li className="text-gray-400">
-                        <Button
-                            onClick={exit}
-                            variant="danger"
-                            label="반대 토론"
-                        />
-                    </li>)}</ul>
-                </div>
-            </div>
             <hr />
             <div className="flex flex-col w-full text-center h-9/12">
                 <h2 className="text-lg font-bold text-blue-600 mb-2">접속자 목록</h2>
@@ -121,6 +124,7 @@ const RoomSidebar: React.FC<SidebarProps> = ({ room }) => {
                     </table>
                 )}
             </div>
+            <RoomLog events={participantsLog} />
             <div className="h-1/12 w-full flex items-center justify-between">
                 <Button
                     onClick={exit}

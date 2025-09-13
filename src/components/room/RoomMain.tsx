@@ -1,10 +1,12 @@
 import React, {useState, useEffect} from 'react';
+import { useNavigate } from "react-router-dom";
 import Input from "../common/Input.tsx";
 import Button from "../common/Button.tsx";
 import {getStompClient} from "../../api/stompClient.ts";
 import axiosInstance from "../../api/axiosInstance.ts";
 import {useAuthStore} from "../../stores/authStore.ts";
 import ChatBox from "./chat/ChatBox.tsx";
+import {toast} from "sonner";
 
 interface ChatMessage {
     id: string;
@@ -20,21 +22,39 @@ interface Props {
     con : string | null;
 }
 
+interface RoomState {
+    id: string;
+    round: number;
+    status: string;
+    hostId : string;
+}
 const RoomMain: React.FC<Props> = ({roomId, pro, con}) => {
+    const navigate = useNavigate();
     const [inputMessage, setInputMessage] = useState('');
     const [messages, setMessages] = useState<ChatMessage[]>([]);
-    const { nickname } = useAuthStore();
+    const { id, nickname } = useAuthStore();
 
     useEffect(() => {
         if (!roomId) return;
         const client = getStompClient();
         if (client.connected) {
+            //채팅 구독
             const chatSub = client.subscribe("/topic/room/" + roomId + "/chat", (message) => {
                 const chat: ChatMessage = JSON.parse(message.body);
                 setMessages((prev) => [...prev, chat]);
             });
+            //채팅방 상태 구독
+            const stateSub = client.subscribe("/topic/room/" + roomId + "/state", (message) => {
+                const state: RoomState = JSON.parse(message.body);
+                // 강제 퇴장 처리
+                if (state.status === "EXIT" && id !== state.hostId) { // 방장이 아닌경우에만
+                    toast.warning("채팅방이 종료되어 나가게 됩니다.");
+                    navigate("/home");
+                }
+            });
             return () => {
                 chatSub.unsubscribe();
+                stateSub.unsubscribe();
             };
         }
     }, [roomId]);
