@@ -1,17 +1,18 @@
 import React, {useEffect, useState} from 'react';
-import {useParams} from 'react-router-dom';
+import {useNavigate, useParams} from 'react-router-dom';
 import axiosInstance from '../api/axiosInstance';
 import RoomSidebar from "../components/room/roomSidebar/RoomSidebar.tsx";
 import RoomInfo from "../components/room/roomSidebar/RoomInfo.tsx";
 import RoomMain from "../components/room/RoomMain.tsx";
 import {toast} from "sonner";
 import {getStompClient} from "../api/stompClient.ts";
+import {useAuthStore} from "../stores/authStore.ts";
 
 interface RoomResponse {
     id: string;
     name: string;
     topic: string;
-    hostNickname: string | null;
+    hostNickname: string;
     proNickname: string | null;
     conNickname: string | null;
     status: string;
@@ -21,10 +22,18 @@ interface RoomResponse {
     isPrivate: boolean;
 }
 
+interface RoomState {
+    id: string;
+    status: string;
+    pro : string | null;
+    con : string | null;
+}
+
 const Room : React.FC = () => {
     const { id } = useParams<{ id: string }>();
     const [room, setRoom] = useState<RoomResponse | null>(null);
-
+    const {nickname} = useAuthStore();
+    const navigate = useNavigate();
     //방 접속 요청
     useEffect(() => {
         (async () => {
@@ -44,7 +53,15 @@ const Room : React.FC = () => {
         const client = getStompClient();
         if (!client.connected) return;
         const stateSub = client.subscribe("/topic/room/" + id + "/state", (message) => {
-            console.log("state:", JSON.parse(message.body));
+            const state: RoomState = JSON.parse(message.body);
+            if(state.status === "WAIT"){
+                setRoom(prev => prev ? { ...prev, proNickname: state.pro, conNickname: state.con } : prev);
+            }
+            // 강제 퇴장 처리
+            if (state.status === "EXIT" && nickname !== room?.hostNickname) { // 방장이 아닌경우에만
+                toast.warning("채팅방이 종료되어 나가게 됩니다.");
+                navigate("/home");
+            }
         });
         return () => {
             stateSub.unsubscribe();
@@ -63,7 +80,7 @@ const Room : React.FC = () => {
                     <RoomInfo name={room.name} topic={room.topic} />
                 </div>
                 <div className="h-11/12 md:h-full">
-                    <RoomMain roomId={room.id} pro={room.proNickname} con={room.conNickname}/>
+                    <RoomMain roomId={room.id} hostNickname={room.hostNickname} pro={room.proNickname} con={room.conNickname}/>
                 </div>
             </div>
         </div>

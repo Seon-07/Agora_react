@@ -1,4 +1,4 @@
-import logo from '../assets/images/Moca_logo.png';
+import logo from '../assets/images/agora_logo.png';
 import axiosInstance from "../api/axiosInstance.ts";
 import { useEffect} from 'react';
 import { useNavigate } from 'react-router-dom';

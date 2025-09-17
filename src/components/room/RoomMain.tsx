@@ -1,12 +1,10 @@
-import React, {useState, useEffect} from 'react';
-import { useNavigate } from "react-router-dom";
+import React, {useEffect, useState} from 'react';
 import Input from "../common/Input.tsx";
 import Button from "../common/Button.tsx";
 import {getStompClient} from "../../api/stompClient.ts";
 import axiosInstance from "../../api/axiosInstance.ts";
 import {useAuthStore} from "../../stores/authStore.ts";
 import ChatBox from "./chat/ChatBox.tsx";
-import {toast} from "sonner";
 
 interface ChatMessage {
     id: string;
@@ -18,21 +16,15 @@ interface ChatMessage {
 
 interface Props {
     roomId: string;
-    pro : string | null;
-    con : string | null;
+    hostNickname: string | null;
+    pro: string | null;
+    con: string | null;
 }
 
-interface RoomState {
-    id: string;
-    round: number;
-    status: string;
-    hostId : string;
-}
-const RoomMain: React.FC<Props> = ({roomId, pro, con}) => {
-    const navigate = useNavigate();
+const RoomMain: React.FC<Props> = ({roomId, hostNickname, pro, con}) => {
     const [inputMessage, setInputMessage] = useState('');
     const [messages, setMessages] = useState<ChatMessage[]>([]);
-    const { id, nickname } = useAuthStore();
+    const { nickname } = useAuthStore();
 
     useEffect(() => {
         if (!roomId) return;
@@ -43,21 +35,11 @@ const RoomMain: React.FC<Props> = ({roomId, pro, con}) => {
                 const chat: ChatMessage = JSON.parse(message.body);
                 setMessages((prev) => [...prev, chat]);
             });
-            //채팅방 상태 구독
-            const stateSub = client.subscribe("/topic/room/" + roomId + "/state", (message) => {
-                const state: RoomState = JSON.parse(message.body);
-                // 강제 퇴장 처리
-                if (state.status === "EXIT" && id !== state.hostId) { // 방장이 아닌경우에만
-                    toast.warning("채팅방이 종료되어 나가게 됩니다.");
-                    navigate("/home");
-                }
-            });
             return () => {
                 chatSub.unsubscribe();
-                stateSub.unsubscribe();
             };
         }
-    }, [roomId]);
+    }, [roomId, hostNickname]);
 
     const sendMessage = async () => {
         if (!inputMessage.trim()) return;
@@ -74,23 +56,16 @@ const RoomMain: React.FC<Props> = ({roomId, pro, con}) => {
 
     return (
         <div className="flex flex-col space-y-4 h-full p-2 border-sky-200 border-x">
-            <div className="flex justify-between px-4 py-2 border-b text-sm font-bold">
-            {nickname === pro ? (
-                <>
-                    <div><span className="text-red-600">반대측:</span> <span>{con}</span></div>
-                    <div><span className="text-blue-600">찬성측:</span> <span>{pro}</span></div>
-                </>
-            ) : (
-                <>
-                    <div><span className="text-blue-600">찬성측:</span> <span>{pro}</span></div>
-                    <div><span className="text-red-600">반대측:</span> <span>{con}</span></div>
-                </>
-            )}
+            <div className="flex flex-col space-y-3">
+                <hr className="block md:hidden mt-3" />
+                <span>찬성측: {pro}</span>
+                <span>반대측: {con}</span>
+                <hr />
             </div>
             <div className="h-9/10 overflow-y-auto space-y-2">
                 {messages.map((chat, idx) => {
-                    let align: "left" | "right" = "left";
-                    let color: "blue" | "gray" | "green" = "gray";
+                    let align: "left" | "right";
+                    let color: "blue" | "gray" | "green";
 
                     if (nickname != pro && nickname != con) {
                         color = "green";

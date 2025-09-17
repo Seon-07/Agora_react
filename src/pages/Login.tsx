@@ -5,11 +5,10 @@ import axios from 'axios';
 import { toast } from 'sonner';
 import { errorHandler } from '../utils/errorHandler.ts';
 import { activateStompClient } from '../api/stompClient';
-import logo from "../assets/images/Moca_logo.png";
+import logo from "../assets/images/agora_logo.png";
 
 const Login: React.FC = () => {
     const navigate = useNavigate();
-    const apiUrl = import.meta.env.VITE_API_URL;
     const [userId, setUserId] = useState('');
     const [pw, setPw] = useState('');
 
@@ -19,13 +18,11 @@ const Login: React.FC = () => {
             pw: pw,
         };
         try {
-            const response = await axiosInstance.post(apiUrl+'/api/auth/login', data);
+            const response = await axiosInstance.post('/api/auth/login', data);
             if(response.data.status === 200){
                 toast.success(response.data.message);
-
                 //웹소켓 활성화
                 activateStompClient();
-
                 navigate('/home');
             }
         } catch (error) {
@@ -56,6 +53,14 @@ const Login: React.FC = () => {
             <button onClick={login} className="bg-blue-500 text-white px-4 py-2 rounded w-64">
                 로그인
             </button>
+            <div className="flex space-x-4 mt-3">
+                <button
+                    onClick={() => navigate('/join')}
+                    className="text-blue-500 hover:underline"
+                >
+                    회원가입
+                </button>
+            </div>
         </div>
     );
 }
